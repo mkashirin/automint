@@ -2289,7 +2289,7 @@ dependencies = [
  "solana-program-test",
  "solana-sdk",
  "spl-associated-token-account 6.0.0",
- "spl-token 7.0.0",
+ "spl-token 6.0.0",
  "tokio",
 ]
 

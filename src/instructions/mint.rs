@@ -1,3 +1,5 @@
+// #![allow(deprecated)]
+
 use {
     mpl_token_metadata::instructions::CreateMasterEditionV3Builder,
     solana_program::{
@@ -6,7 +8,8 @@ use {
         msg,
         program::invoke,
     },
-    spl_associated_token_account::instruction as associated_token_account_instruction,
+    spl_associated_token_account::instruction as ata_instruction,
+    // spl_associated_token_account::create_associated_token_account,
     spl_token::instruction as token_instruction,
 };
 
@@ -14,7 +17,7 @@ pub fn mint_to(accounts: &[AccountInfo]) -> ProgramResult {
     let accounts_iter = &mut accounts.iter();
 
     let associated_token_account = next_account_info(accounts_iter)?;
-    let associated_token_program = next_account_info(accounts_iter)?;
+    let _associated_token_program = next_account_info(accounts_iter)?;
     let edition_account = next_account_info(accounts_iter)?;
     let metadata_account = next_account_info(accounts_iter)?;
     let mint_account = next_account_info(accounts_iter)?;
@@ -24,22 +27,48 @@ pub fn mint_to(accounts: &[AccountInfo]) -> ProgramResult {
     let system_program = next_account_info(accounts_iter)?;
     let token_metadata_program = next_account_info(accounts_iter)?;
     let token_program = next_account_info(accounts_iter)?;
+    let wallet = next_account_info(accounts_iter)?;
 
     if associated_token_account.lamports() == 0 {
         msg!("Creating associated token account...");
+
+        // For debugging purposes only!
+        // ```rust
+        // msg!(
+        //     "\nata: {}\natp: {}\nea: {},\nmda: {}\nmint: {}\nmauth: {}\n\
+        //     payer: {}\nrent: {}\nsysprog: {}\ntmprog: {}\ntprog: {}\n\
+        //     wallet: {}",
+        //     associated_token_account.key,
+        //     associated_token_program.key,
+        //     edition_account.key,
+        //     metadata_account.key,
+        //     mint_account.key,
+        //     mint_authority.key,
+        //     payer.key,
+        //     rent.key,
+        //     system_program.key,
+        //     token_metadata_program.key,
+        //     token_program.key,
+        //     wallet.key,
+        // );
+        // ```
+
+        // TODO: Resolve the issue with `create_associated_token_account()`
+        // invokation
         invoke(
-            &associated_token_account_instruction::create_associated_token_account(
+            &ata_instruction::create_associated_token_account(
                 payer.key,
-                payer.key,
+                wallet.key,
                 mint_account.key,
                 token_program.key,
             ),
             &[
-                mint_account.clone(),
-                associated_token_account.clone(),
                 payer.clone(),
+                associated_token_account.clone(),
+                wallet.clone(),
+                mint_account.clone(),
+                system_program.clone(),
                 token_program.clone(),
-                associated_token_program.clone(),
             ],
         )?;
     } else {
