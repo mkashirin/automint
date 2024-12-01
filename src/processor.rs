@@ -67,6 +67,7 @@ mod test {
     async fn test_create_nft_token() {
         msg!("Running `test_create_nft_token`...");
 
+        // Setting up the testing environment
         let (program_id, program_test) = initialize_program_test();
         let ctx = program_test.start_with_context().await;
         let mint_authority_id = ctx.payer.pubkey();
@@ -83,6 +84,7 @@ mod test {
             &mpl_token_metadata::ID,
         );
 
+        // Initializing instruction
         let ix = Instruction::new_with_borsh(
             program_id,
             &SplNftMinterIntstruction::Create(CreateNftTokenArgs {
@@ -103,6 +105,7 @@ mod test {
             ],
         );
 
+        // Initializing transaction with the instruction above
         let tx = Transaction::new_signed_with_payer(
             &[ix],
             Some(&payer_id),
@@ -110,7 +113,9 @@ mod test {
             ctx.last_blockhash,
         );
 
+        // Executing the transaction
         let tx_result = ctx.banks_client.process_transaction(tx).await;
+
         assert!(tx_result.is_ok());
     }
 
@@ -118,6 +123,7 @@ mod test {
     async fn test_mint_created_nft_token() {
         msg!("Running `test_mint_created_nft_token`...");
 
+        // Setting up the testing environment
         let (program_id, program_test) = initialize_program_test();
         msg!("Program ID: {}", program_id);
         let ctx = program_test.start_with_context().await;
@@ -152,6 +158,48 @@ mod test {
                 &spl_token::ID,
             );
 
+        // Create NFT
+        msg!("Creating NFT...");
+
+        // Initializing instruction to create NFT
+        let ix = Instruction::new_with_borsh(
+            program_id,
+            &SplNftMinterIntstruction::Create(CreateNftTokenArgs {
+                name: "Ballet Dancers BTC".to_string(),
+                symbol: "BDB".to_string(),
+                uri: "https://storage.yandexcloud.net/lab-bucket/item.json"
+                    .to_string(),
+            }),
+            vec![
+                AccountMeta::new(metadata_account_id, false),
+                AccountMeta::new(mint_account_id, true),
+                AccountMeta::new(mint_authority_id, true),
+                AccountMeta::new(payer_id, true),
+                AccountMeta::new_readonly(rent::ID, false),
+                AccountMeta::new_readonly(system_program::ID, false),
+                AccountMeta::new_readonly(mpl_token_metadata::ID, false),
+                AccountMeta::new_readonly(spl_token::ID, false),
+            ],
+        );
+
+        // Initializing transaction with the instruction above
+        let tx = Transaction::new_signed_with_payer(
+            &[ix],
+            Some(&payer_id),
+            &[&ctx.payer, &mint_account],
+            ctx.last_blockhash,
+        );
+
+        // Executing the transaction above
+        let tx_result = ctx.banks_client.process_transaction(tx).await;
+
+        assert!(tx_result.is_ok());
+        msg!("NFT created successfully!");
+
+        // Mint the created NFT
+        msg!("Minting NFT...");
+
+        // Initializing instruction to mint the created NFT
         let ix = Instruction::new_with_borsh(
             program_id,
             &SplNftMinterIntstruction::Mint,
@@ -174,6 +222,7 @@ mod test {
             ],
         );
 
+        // Initializing transaction with the instruction above
         let tx = Transaction::new_signed_with_payer(
             &[ix],
             Some(&payer_id),
@@ -181,7 +230,10 @@ mod test {
             ctx.last_blockhash,
         );
 
+        // Executing the transaction above
         let tx_result = ctx.banks_client.process_transaction(tx).await;
+
         assert!(tx_result.is_ok());
+        msg!("NFT minted successfully!");
     }
 }
