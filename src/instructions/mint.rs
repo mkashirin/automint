@@ -56,7 +56,7 @@ pub fn mint_to(accounts: &[AccountInfo]) -> ProgramResult {
         // ```
 
         // TODO: Resolve the issue with `create_associated_token_account()`
-        // invokation
+        // invocation
         invoke(
             &ata_instruction::create_associated_token_account(
                 payer.key,
