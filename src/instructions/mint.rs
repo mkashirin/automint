@@ -29,7 +29,9 @@ pub fn mint_to(accounts: &[AccountInfo]) -> ProgramResult {
     let token_program = next_account_info(accounts_iter)?;
     let wallet = next_account_info(accounts_iter)?;
 
-    if associated_token_account.lamports() == 0 {
+    if associated_token_account.lamports() != 0 {
+        msg!("Associated token account exists.");
+    } else {
         msg!("Creating associated token account...");
 
         // For debugging purposes only!
@@ -71,8 +73,6 @@ pub fn mint_to(accounts: &[AccountInfo]) -> ProgramResult {
                 token_program.clone(),
             ],
         )?;
-    } else {
-        msg!("Associated token account exists.");
     }
     msg!("Associated Token Address: {}", associated_token_account.key);
 
