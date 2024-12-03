@@ -23,7 +23,7 @@ pub fn mint_to(accounts: &[AccountInfo]) -> ProgramResult {
     let rent = next_account_info(accounts_iter)?;
     let system_program = next_account_info(accounts_iter)?;
     let token_program = next_account_info(accounts_iter)?;
-    let token_metadata_program = next_account_info(accounts_iter)?;
+    let _token_metadata_program = next_account_info(accounts_iter)?;
     let wallet = next_account_info(accounts_iter)?;
 
     if associated_token_account.lamports() != 0 {
@@ -62,9 +62,8 @@ pub fn mint_to(accounts: &[AccountInfo]) -> ProgramResult {
         )?,
         &[
             mint_account.clone(),
-            mint_authority.clone(),
             associated_token_account.clone(),
-            token_program.clone(),
+            mint_authority.clone(),
         ],
     )?;
 
@@ -88,52 +87,17 @@ pub fn mint_to(accounts: &[AccountInfo]) -> ProgramResult {
             .instruction(),
         &[
             edition_account.clone(),
-            metadata_account.clone(),
             mint_account.clone(),
-            mint_authority.clone(),
+            mint_authority.clone(), // Update authority is...
+            mint_authority.clone(), // ...the mint authority
             payer.clone(),
-            token_metadata_program.clone(),
+            metadata_account.clone(),
+            token_program.clone(),
+            system_program.clone(),
             rent.clone(),
         ],
     )?;
 
-    // If we don't use Metaplex Editions, we must disable minting manually as
-    // follows:
-    // ```rust
-    // msg!("Disabling future minting of this NFT...");
-    // invoke(
-    //     &token_instruction::set_authority(
-    //         &token_program.key,
-    //         &mint_account.key,
-    //         None,
-    //         token_instruction::AuthorityType::MintTokens,
-    //         &mint_authority.key,
-    //         &[&mint_authority.key],
-    //     )?,
-    //     &[
-    //         mint_account.clone(),
-    //         mint_authority.clone(),
-    //         token_program.clone(),
-    //     ],
-    // )?;
-    // invoke(
-    //     &token_instruction::set_authority(
-    //         &token_program.key,
-    //         &mint_account.key,
-    //         None,
-    //         token_instruction::AuthorityType::FreezeAccount,
-    //         &mint_authority.key,
-    //         &[&mint_authority.key],
-    //     )?,
-    //     &[
-    //         mint_account.clone(),
-    //         mint_authority.clone(),
-    //         token_program.clone(),
-    //     ],
-    // )?;
-    // ```
-
     msg!("NFT minted successfully!");
-
     Ok(())
 }

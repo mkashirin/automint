@@ -38,7 +38,6 @@ pub fn create_token(
     let token_program = next_account_info(accounts_iter)?;
     let token_metadata_program = next_account_info(accounts_iter)?;
 
-
     // First create the account for the Mint
     msg!("Creating mint account...");
     msg!("Mint: {}", mint_account.key);
@@ -51,10 +50,8 @@ pub fn create_token(
             token_program.key,
         ),
         &[
-            mint_account.clone(),
             payer.clone(),
-            system_program.clone(),
-            token_program.clone(),
+            mint_account.clone(),
         ],
     )?;
 
@@ -69,12 +66,7 @@ pub fn create_token(
             Some(mint_authority.key),
             0,
         )?,
-        &[
-            mint_account.clone(),
-            mint_authority.clone(),
-            token_program.clone(),
-            rent.clone(),
-        ],
+        &[mint_account.clone(), rent.clone()],
     )?;
 
     // Now create the account for that Mint's metadata
@@ -103,8 +95,9 @@ pub fn create_token(
         &[
             metadata_account.clone(),
             mint_account.clone(),
-            mint_authority.clone(),
+            mint_authority.clone(), // Mint authority is...
             payer.clone(),
+            mint_authority.clone(), // ...the update authority
             token_metadata_program.clone(),
             system_program.clone(),
             rent.clone(),
