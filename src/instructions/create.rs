@@ -35,8 +35,9 @@ pub fn create_token(
     let payer = next_account_info(accounts_iter)?;
     let rent = next_account_info(accounts_iter)?;
     let system_program = next_account_info(accounts_iter)?;
-    let token_metadata_program = next_account_info(accounts_iter)?;
     let token_program = next_account_info(accounts_iter)?;
+    let token_metadata_program = next_account_info(accounts_iter)?;
+
 
     // First create the account for the Mint
     msg!("Creating mint account...");

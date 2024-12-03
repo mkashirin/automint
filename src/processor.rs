@@ -62,7 +62,6 @@ mod test {
         (program_id, program_test)
     }
 
-    #[ignore = "Passes. Need to only run `test_mint_created_nft_token()`"]
     #[tokio::test]
     async fn test_create_nft_token() {
         msg!("Running `test_create_nft_token`...");
@@ -100,8 +99,8 @@ mod test {
                 AccountMeta::new(payer_id, true),
                 AccountMeta::new_readonly(rent::ID, false),
                 AccountMeta::new_readonly(system_program::ID, false),
-                AccountMeta::new_readonly(mpl_token_metadata::ID, false),
                 AccountMeta::new_readonly(spl_token::ID, false),
+                AccountMeta::new_readonly(mpl_token_metadata::ID, false),
             ],
         );
 
@@ -153,7 +152,7 @@ mod test {
         );
         let associated_token_account_id =
             get_associated_token_address_with_program_id(
-                &payer_id,
+                &wallet_id,
                 &mint_account_id,
                 &spl_token::ID,
             );
@@ -177,8 +176,8 @@ mod test {
                 AccountMeta::new(payer_id, true),
                 AccountMeta::new_readonly(rent::ID, false),
                 AccountMeta::new_readonly(system_program::ID, false),
-                AccountMeta::new_readonly(mpl_token_metadata::ID, false),
                 AccountMeta::new_readonly(spl_token::ID, false),
+                AccountMeta::new_readonly(mpl_token_metadata::ID, false),
             ],
         );
 

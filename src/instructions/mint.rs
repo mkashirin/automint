@@ -1,5 +1,3 @@
-// #![allow(deprecated)]
-
 use {
     mpl_token_metadata::instructions::CreateMasterEditionV3Builder,
     solana_program::{
@@ -9,7 +7,6 @@ use {
         program::invoke,
     },
     spl_associated_token_account::instruction as ata_instruction,
-    // spl_associated_token_account::create_associated_token_account,
     spl_token::instruction as token_instruction,
 };
 
@@ -25,38 +22,14 @@ pub fn mint_to(accounts: &[AccountInfo]) -> ProgramResult {
     let payer = next_account_info(accounts_iter)?;
     let rent = next_account_info(accounts_iter)?;
     let system_program = next_account_info(accounts_iter)?;
-    let token_metadata_program = next_account_info(accounts_iter)?;
     let token_program = next_account_info(accounts_iter)?;
+    let token_metadata_program = next_account_info(accounts_iter)?;
     let wallet = next_account_info(accounts_iter)?;
 
     if associated_token_account.lamports() != 0 {
         msg!("Associated token account exists.");
     } else {
         msg!("Creating associated token account...");
-
-        // For debugging purposes only!
-        // ```rust
-        // msg!(
-        //     "\nata: {}\natp: {}\nea: {},\nmda: {}\nmint: {}\nmauth: {}\n\
-        //     payer: {}\nrent: {}\nsysprog: {}\ntmprog: {}\ntprog: {}\n\
-        //     wallet: {}",
-        //     associated_token_account.key,
-        //     associated_token_program.key,
-        //     edition_account.key,
-        //     metadata_account.key,
-        //     mint_account.key,
-        //     mint_authority.key,
-        //     payer.key,
-        //     rent.key,
-        //     system_program.key,
-        //     token_metadata_program.key,
-        //     token_program.key,
-        //     wallet.key,
-        // );
-        // ```
-
-        // TODO: Resolve the issue with `create_associated_token_account()`
-        // invocation
         invoke(
             &ata_instruction::create_associated_token_account(
                 payer.key,
