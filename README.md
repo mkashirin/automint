@@ -1,4 +1,4 @@
-# Automint
+# 🖼️ Automint
 
 This is going to be a bot-like program aimed to perform Solana NFT
 operations automatically.
